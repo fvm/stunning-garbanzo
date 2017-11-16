@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"time"
@@ -12,7 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type Setting struct {
+type setting struct {
 	path   string
 	height int
 	width  int
@@ -22,35 +21,10 @@ const timeout = 1 * time.Minute
 
 func main() {
 
-	s := []Setting{
-		{
-			path:   "./1",
-			height: 100,
-			width:  100,
-		},
-		{
-			path:   "./2",
-			height: 200,
-			width:  200,
-		},
-	}
-	b, err := ioutil.ReadFile("noise.jpg")
-	if err != nil {
-		logrus.Fatal(err)
-	}
-
-	if err := ConvertParallel(b, s); err != nil {
-		logrus.Fatal(err)
-	}
-
-	if err := ConvertSequential(b, s); err != nil {
-		logrus.Fatal(err)
-	}
-
 }
 
-func ConvertSequential(image []byte, s []Setting) error {
-	for _, Setting := range s {
+func convertSequential(image []byte, s []setting) error {
+	for _, setting := range s {
 
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		defer cancel()
@@ -58,9 +32,9 @@ func ConvertSequential(image []byte, s []Setting) error {
 		args := []string{}
 		args = append(args, "-")
 		args = append(args, "-resize")
-		args = append(args, fmt.Sprintf("%dx%d", Setting.width, Setting.height))
+		args = append(args, fmt.Sprintf("%dx%d", setting.width, setting.height))
 
-		args = append(args, fmt.Sprintf("jpeg:%s-s.jpg", Setting.path))
+		args = append(args, fmt.Sprintf("jpeg:%s-s.jpg", setting.path))
 
 		cmd := exec.CommandContext(ctx, "convert", args...)
 
@@ -94,22 +68,22 @@ func ConvertSequential(image []byte, s []Setting) error {
 
 }
 
-func ConvertParallel(image []byte, s []Setting) error {
+func convertParallel(image []byte, s []setting) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	args := []string{}
 	args = append(args, "-")
 
-	for _, Setting := range s {
+	for _, setting := range s {
 		subargs := []string{}
 		// Create a substring \( +clone -write show: +delete \)\
 		subargs = append(subargs, "(")
 		subargs = append(subargs, "+clone")
 		subargs = append(subargs, "-resize")
-		subargs = append(subargs, fmt.Sprintf("%dx%d", Setting.width, Setting.height))
+		subargs = append(subargs, fmt.Sprintf("%dx%d", setting.width, setting.height))
 		subargs = append(subargs, "-write")
-		subargs = append(subargs, fmt.Sprintf("jpeg:%s-p.jpg", Setting.path))
+		subargs = append(subargs, fmt.Sprintf("jpeg:%s-p.jpg", setting.path))
 		subargs = append(subargs, "+delete")
 		subargs = append(subargs, ")")
 		args = append(args, subargs...)

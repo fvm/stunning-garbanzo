@@ -11,9 +11,9 @@ import (
 func BenchmarkMain(b *testing.B) {
 	base := "./bench"
 
-	s := make([]Setting, 6)
+	s := make([]setting, 6)
 	for i := range s {
-		s[i] = Setting{
+		s[i] = setting{
 			path:   fmt.Sprintf("%s/%d", base, i),
 			height: rand.Intn(2000),
 			width:  rand.Intn(2000),
@@ -54,7 +54,7 @@ func TestConvertParallel(t *testing.T) {
 	os.MkdirAll(base, 0777)
 	defer os.RemoveAll("./test")
 
-	s := []Setting{
+	s := []setting{
 		{
 			path:   fmt.Sprintf("%s/%d", base, 1),
 			height: 100,
@@ -82,7 +82,7 @@ func TestConvertSequential(t *testing.T) {
 	os.MkdirAll(base, 0777)
 	defer os.RemoveAll("./test")
 
-	s := []Setting{
+	s := []setting{
 		{
 			path:   fmt.Sprintf("%s/%d", base, 1),
 			height: 100,
