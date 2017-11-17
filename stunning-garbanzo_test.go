@@ -8,6 +8,9 @@ import (
 	"testing"
 )
 
+// TODO: Define standard output settings
+// TODO: Benchmark an entire series of exports on a varied range of inputs
+
 func BenchmarkBicycle(b *testing.B) {
 	base := "./bench"
 
