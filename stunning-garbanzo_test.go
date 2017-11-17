@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func BenchmarkMain(b *testing.B) {
+func BenchmarkBicycle(b *testing.B) {
 	base := "./bench"
 
 	s := make([]setting, 6)
@@ -19,7 +19,7 @@ func BenchmarkMain(b *testing.B) {
 			width:  rand.Intn(2000),
 		}
 	}
-	image, err := ioutil.ReadFile("OV-fiets2009.jpg")
+	image, err := ioutil.ReadFile("bike.jpg")
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -31,7 +31,7 @@ func BenchmarkMain(b *testing.B) {
 		defer os.RemoveAll(base)
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
-			ConvertParallel(image, s)
+			convertParallel(image, s)
 		}
 
 	})
@@ -42,7 +42,127 @@ func BenchmarkMain(b *testing.B) {
 		defer os.RemoveAll(base)
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
-			ConvertSequential(image, s)
+			convertSequential(image, s)
+		}
+
+	})
+
+}
+func BenchmarkChess(b *testing.B) {
+	base := "./bench"
+
+	s := make([]setting, 6)
+	for i := range s {
+		s[i] = setting{
+			path:   fmt.Sprintf("%s/%d", base, i),
+			height: rand.Intn(2000),
+			width:  rand.Intn(2000),
+		}
+	}
+	image, err := ioutil.ReadFile("chess.jpg")
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.Run("BenchmarkConvertParallel", func(b *testing.B) {
+
+		os.MkdirAll(base, 0777)
+
+		defer os.RemoveAll(base)
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			convertParallel(image, s)
+		}
+
+	})
+	b.Run("BenchmarkConvertSequential", func(b *testing.B) {
+
+		os.MkdirAll(base, 0777)
+
+		defer os.RemoveAll(base)
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			convertSequential(image, s)
+		}
+
+	})
+
+}
+func BenchmarkNoise(b *testing.B) {
+	base := "./bench"
+
+	s := make([]setting, 6)
+	for i := range s {
+		s[i] = setting{
+			path:   fmt.Sprintf("%s/%d", base, i),
+			height: rand.Intn(2000),
+			width:  rand.Intn(2000),
+		}
+	}
+	image, err := ioutil.ReadFile("noise.jpg")
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.Run("BenchmarkConvertParallel", func(b *testing.B) {
+
+		os.MkdirAll(base, 0777)
+
+		defer os.RemoveAll(base)
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			convertParallel(image, s)
+		}
+
+	})
+	b.Run("BenchmarkConvertSequential", func(b *testing.B) {
+
+		os.MkdirAll(base, 0777)
+
+		defer os.RemoveAll(base)
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			convertSequential(image, s)
+		}
+
+	})
+
+}
+func BenchmarkTiff(b *testing.B) {
+	base := "./bench"
+
+	s := make([]setting, 6)
+	for i := range s {
+		s[i] = setting{
+			path:   fmt.Sprintf("%s/%d", base, i),
+			height: rand.Intn(2000),
+			width:  rand.Intn(2000),
+		}
+	}
+	image, err := ioutil.ReadFile("tiff.tif")
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.Run("BenchmarkConvertParallel", func(b *testing.B) {
+
+		os.MkdirAll(base, 0777)
+
+		defer os.RemoveAll(base)
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			convertParallel(image, s)
+		}
+
+	})
+	b.Run("BenchmarkConvertSequential", func(b *testing.B) {
+
+		os.MkdirAll(base, 0777)
+
+		defer os.RemoveAll(base)
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			convertSequential(image, s)
 		}
 
 	})
@@ -72,7 +192,7 @@ func TestConvertParallel(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := ConvertParallel(b, s); err != nil {
+	if err := convertParallel(b, s); err != nil {
 		t.Error(err)
 	}
 }
@@ -99,7 +219,7 @@ func TestConvertSequential(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := ConvertParallel(b, s); err != nil {
+	if err := convertParallel(b, s); err != nil {
 		t.Error(err)
 	}
 }
